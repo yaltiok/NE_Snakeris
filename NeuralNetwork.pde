@@ -138,6 +138,14 @@ class NeuralNetwork {
     }
     return a;
   }
+  
+  void setInputWeights(float[][] inputWeights){
+    this.weights_ih.matrix = inputWeights;
+  }
+  
+  void setHiddenWeights(float[][] hiddenWeights){
+    this.weights_ho.matrix = hiddenWeights;
+  }
 
   // Push the matrix through activation function
   void activateMatrix(Matrix m) {

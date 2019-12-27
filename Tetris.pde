@@ -54,9 +54,11 @@ class Tetris {
     lowerBoard(index);
   }
 
-  void update() {
+  void update(boolean show) {
     dropDown();
-    show();
+    if (show) {
+      show();
+    }
   }
 
   void show() {
@@ -155,10 +157,10 @@ class Tetris {
 
     boolean checkLand() {
       for (int k = 0; k < arr.length; k++) {
-        
+
         int idx_i = floor(arr[k].x);
         int idx_j = floor(arr[k].y);
-        
+
         if (idx_j + 1 == rows) {
           addToDroppedBoard();
           pieceFalling = false;

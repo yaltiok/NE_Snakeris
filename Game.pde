@@ -1,10 +1,14 @@
+// TODO:
+// 1) Spawn food accordingly!
+
+
 class Game {
   Snake snake;
   Food food;
   Tetris tetris;
   NeuralNetwork brain;
 
-  float[] inputs = new float[10];
+  float[] inputs = new float[452];
   float[] outputs = new float[4];
 
   int cols;
@@ -16,8 +20,8 @@ class Game {
   int xEndPoint;
   int yStartPoint;
   int yEndPoint;
-  
-  int score = 0;
+
+  float score = 100;
   float fitness = 0.0;
 
 
@@ -30,7 +34,7 @@ class Game {
     this.xOrder = xOrder;
     this.yOrder = yOrder;
     this.cellSize = cellSize;
-    brain = new NeuralNetwork(10, 24, 4);
+    brain = new NeuralNetwork(inputs.length, 512, 4);
     xStartPoint = xOrder * cols;
     xEndPoint = (xOrder + 1) * cols;
     yStartPoint = yOrder * rows;
@@ -49,12 +53,14 @@ class Game {
         if (tetris.droppedPieces[i][j]) {
           float x = cellSize*(i + (xOrder) * cols);
           float y = cellSize*(j + (yOrder) * rows);
-          //println(snake.snake[0].x + " " + -x + " " + snake.snake[0].y + " " + -y);
-          if(snake.snake[0].x == x && snake.snake[0].y == y){
+          if (snake.snake[0].x == x && snake.snake[0].y == y) {
             over = true;
           }
         }
       }
+    }
+    if (over) {
+      score-=100;
     }
   }
 
@@ -94,13 +100,14 @@ class Game {
       }
     }
   }
-  void update() {
+  void update(boolean show) {
     if (!over) {
+      score++;
       if (!tetris.pieceFalling) {
         decide();
-        snake.update();
-        food.show();
+        snake.update(show);
         if (foodFound()) {
+          score+=100;
           food.eaten = true;
           createTetrisObject();
           createFood();
@@ -109,8 +116,11 @@ class Game {
         createInputs();
       }
       checkDead();
-      show();
-      tetris.update();
+      if (show) {
+        food.show();
+        show();
+      }
+      tetris.update(show);
     }
   }
 
@@ -122,16 +132,38 @@ class Game {
   void createInputs() {
     // TODO : 
     // Normalize all inputs!!!
+    float offsetX = (cellSize * xOrder * cols);
+    float offsetY = (cellSize * yOrder * rows);
+    float xDenominator = (cols*cellSize);
+    float yDenominator = (rows*cellSize);
     inputs[0] = (food.x - xOrder * cols) / cols;  // cellSize * (food.x - xOrder * cols) / (cols * cellSize) 
     inputs[1] = (food.y - yOrder * rows) / rows;  // cellSize a gerek var mı? yok gibi.
-    inputs[2] = snake.snake[0].x;
-    inputs[3] = snake.snake[0].y;
-    inputs[4] = snake.snake[1].x;
-    inputs[5] = snake.snake[1].y;
-    inputs[6] = snake.snake[2].x;
-    inputs[7] = snake.snake[2].y;
-    inputs[8] = snake.snake[3].x;
-    inputs[9] = snake.snake[3].y;
+
+    inputs[2] = (snake.snake[0].x - offsetX) / (xDenominator);
+    inputs[4] = (snake.snake[1].x - offsetX) / (xDenominator);
+    inputs[6] = (snake.snake[2].x - offsetX) / (xDenominator);
+    inputs[8] = (snake.snake[3].x - offsetX) / (xDenominator);
+
+    inputs[3] = (snake.snake[0].y - offsetY) / (yDenominator);
+    inputs[5] = (snake.snake[1].y - offsetY) / (yDenominator);
+    inputs[7] = (snake.snake[2].y - offsetY) / (yDenominator);
+    inputs[9] = (snake.snake[3].y - offsetY) / (yDenominator);
+
+    for (int i = rows - 1; i >= 6; i--) {
+      for (int j = cols - 1; j >= 0; j--) {
+        boolean filled = tetris.droppedPieces[j][i];
+        int index = (3 * i) + 10;
+        float x = i / cols;
+        float y = j / rows;
+        inputs[index] = x;
+        inputs[index + 1] = y;
+        if (filled) {
+          inputs[index + 2] = 1;
+        } else {
+          inputs[index + 2] = 0;
+        }
+      }
+    }
   }
   void move() {
     int dirX = snake.dirX;
@@ -167,6 +199,7 @@ class Game {
 
   class Food {
     int x = floor(random(xStartPoint, xEndPoint));
+    //int x = 6 + xStartPoint;
     int y = 5 + yStartPoint;
     boolean eaten = false;
     int size;

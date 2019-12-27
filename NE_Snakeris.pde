@@ -1,12 +1,16 @@
 
-final int cellSize = 5;
+final int cellSize = 4;
 final int colCount = 11;
 final int rowCount = 20;
 final int xCount = 10;
-final int yCount = 6;
+final int yCount = 10;
 final int gameCount = xCount * yCount;
 final int w = cellSize * colCount * xCount;
 final int h = cellSize * rowCount * yCount;
+int gamesLeft = gameCount;
+int gameSpeed = 1;
+boolean show = true;
+int generation = 1;
 
 final int lifeTime = 200;
 int cycle = 0;
@@ -34,25 +38,28 @@ void setup() {
 
 void draw() {
   background(52);
-  if (cycle >= lifeTime) {
-    startNewGame();
-  }
-  for (int i = 0; i< xCount; i++) {
-    for (int j = 0; j< yCount; j++) {
-      games[i][j].update();
+
+  for (int k = 0; k < gameSpeed; k++) {
+    if (cycle >= lifeTime || countGames() <= 0) {
+      startNewGame();
     }
+    for (int i = 0; i< xCount; i++) {
+      for (int j = 0; j< yCount; j++) {
+        games[i][j].update(show);
+      }
+    }
+    cycle++;
+    push();
+    strokeWeight(1/gameCount);
+    stroke(255);
+    for (int i = 1; i < xCount; i++) {
+      line(i * colCount * cellSize, 0, i * colCount * cellSize, height);
+    }
+    for (int i = 1; i < yCount; i++) {
+      line(0, i * rowCount * cellSize, width, i * rowCount * cellSize);
+    }
+    pop();
   }
-  push();
-  strokeWeight(1/gameCount);
-  stroke(255);
-  for (int i = 1; i < xCount; i++) {
-    line(i * colCount * cellSize, 0, i * colCount * cellSize, height);
-  }
-  for (int i = 1; i < yCount; i++) {
-    line(0, i * rowCount * cellSize, width, i * rowCount * cellSize);
-  }
-  pop();
-  cycle++;
 }
 
 void mousePressed() {
@@ -65,23 +72,41 @@ void mousePressed() {
 
 
 void startNewGame() {
-  //for (int i = 0; i< xCount; i++) {
-  //  for (int j = 0; j < yCount; j++) {
-  //    games[i][j] = new Game(colCount, rowCount, cellSize, i, j);
-  //  }
-  //}
-  //cycle = 0;
   ga.nextGeneration();
   cycle = 0;
+  generation++;
+  println(generation);
 }
 
-//void keyPressed() {
-//  for (int i = 0; i< xCount; i++) {
-//    for (int j = 0; j < yCount; j++) {
-//      Game game = games[i][j];
-//      if (key == CODED) {
 
-//      }
-//    }
-//  }
-//}
+int countGames() {
+  int sum = 0;
+  for (int i = 0; i< xCount; i++) {
+    for (int j = 0; j < yCount; j++) {
+      if (!games[i][j].over) {
+        sum++;
+      }
+    }
+  }
+  return sum;
+}
+
+void keyPressed() {
+  if (keyCode == UP) {
+    gameSpeed+=10;
+  } else if (keyCode == DOWN && gameSpeed >= 2) {
+    gameSpeed-=10;
+  } else if (keyCode == BACKSPACE) {
+    if (show) {
+      show = false;
+    } else {
+      show = true;
+    }
+  } else if (keyCode == ENTER) {
+    if (frameRate <= 10) {
+      frameRate(60);
+    } else {
+      frameRate(8);
+    }
+  }
+}
