@@ -1,14 +1,19 @@
 
-final int cellSize = 5;
+final int cellSize = 2;
 final int colCount = 11;
 final int rowCount = 20;
-final int xCount = 10;
-final int yCount = 6;
+final int xCount = 40;
+final int yCount = 22;
 final int gameCount = xCount * yCount;
 final int w = cellSize * colCount * xCount;
 final int h = cellSize * rowCount * yCount;
+int gamesLeft = gameCount;
+int gameSpeed = 1;
+boolean fast = false;
+boolean show = true;
+int generation = 1;
 
-final int lifeTime = 200;
+final int lifeTime = 500;
 int cycle = 0;
 GeneticAlgorithm ga;
 
@@ -34,13 +39,17 @@ void setup() {
 
 void draw() {
   background(52);
-  if (cycle >= lifeTime) {
-    startNewGame();
-  }
-  for (int i = 0; i< xCount; i++) {
-    for (int j = 0; j< yCount; j++) {
-      games[i][j].update();
+
+  for (int k = 0; k < gameSpeed; k++) {
+    if (cycle >= lifeTime || countGames() <= 0) {
+      startNewGame();
     }
+    for (int i = 0; i< xCount; i++) {
+      for (int j = 0; j< yCount; j++) {
+        games[i][j].update(show);
+      }
+    }
+    cycle++;
   }
   push();
   strokeWeight(1/gameCount);
@@ -52,7 +61,6 @@ void draw() {
     line(0, i * rowCount * cellSize, width, i * rowCount * cellSize);
   }
   pop();
-  cycle++;
 }
 
 void mousePressed() {
@@ -65,23 +73,46 @@ void mousePressed() {
 
 
 void startNewGame() {
-  //for (int i = 0; i< xCount; i++) {
-  //  for (int j = 0; j < yCount; j++) {
-  //    games[i][j] = new Game(colCount, rowCount, cellSize, i, j);
-  //  }
-  //}
-  //cycle = 0;
   ga.nextGeneration();
   cycle = 0;
+  generation++;
+  println(generation);
 }
 
-//void keyPressed() {
-//  for (int i = 0; i< xCount; i++) {
-//    for (int j = 0; j < yCount; j++) {
-//      Game game = games[i][j];
-//      if (key == CODED) {
 
-//      }
-//    }
-//  }
-//}
+int countGames() {
+  int sum = 0;
+  for (int i = 0; i< xCount; i++) {
+    for (int j = 0; j < yCount; j++) {
+      if (!games[i][j].over) {
+        sum++;
+      }
+    }
+  }
+  return sum;
+}
+
+void keyPressed() {
+  if (keyCode == UP && !fast) {
+    gameSpeed=10;
+    println("Game Speed : " + gameSpeed);
+  } else if (keyCode == DOWN && fast) {
+    gameSpeed=1;
+    println("Game Speed : " + gameSpeed);
+  } else if (keyCode == BACKSPACE) {
+    if (show) {
+      show = false;
+    } else {
+      show = true;
+    }
+  } else if (keyCode == ENTER) {
+    if (frameRate <= 10) {
+      frameRate(60);
+    } else {
+      frameRate(8);
+    }
+  } else if (keyCode == RIGHT) {
+    startNewGame();
+  }
+  println("Frame Rate : " + frameRate);
+}

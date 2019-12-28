@@ -34,7 +34,7 @@ class Matrix {
         arr[j][i] = matrix[i][j];
       }
     }
-    return new Matrix(cols,rows,arr);
+    return new Matrix(cols, rows, arr);
   }
 
   Matrix subtract(Matrix a) {
@@ -47,7 +47,7 @@ class Matrix {
         arr[i][j] = this.matrix[i][j] - a.matrix[i][j];
       }
     }
-    return new Matrix(a.rows,this.cols,arr);
+    return new Matrix(a.rows, this.cols, arr);
   }
 
   void add(float n) {
@@ -58,6 +58,16 @@ class Matrix {
         matrix[i][j] += n;
       }
     }
+  }
+
+  float[][] copyMatrix() {
+    float[][] arr = new float[rows][cols];
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < cols; j++) {
+        arr[i][j] = matrix[i][j];
+      }
+    }
+    return arr;
   }
 
   void add(Matrix n) {

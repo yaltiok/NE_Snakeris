@@ -10,6 +10,7 @@ class Tetris {
   int yOrder;
   int cellSize;
   boolean pieceFalling = false;
+  float score = 0;
 
   Tetris(int cols, int rows, int xOrder, int yOrder, int cellSize) {
     this.cols = cols;
@@ -51,12 +52,19 @@ class Tetris {
     for (int i = 0; i < droppedPieces.length; i++) {
       droppedPieces[i][index] = false;
     }
+    score += 20;
     lowerBoard(index);
   }
 
-  void update() {
+  void update(boolean show) {
     dropDown();
-    show();
+    if (show) {
+      show();
+    }
+  }
+  
+  float getTetrisScore(){
+    return score;
   }
 
   void show() {
@@ -155,10 +163,10 @@ class Tetris {
 
     boolean checkLand() {
       for (int k = 0; k < arr.length; k++) {
-        
+
         int idx_i = floor(arr[k].x);
         int idx_j = floor(arr[k].y);
-        
+
         if (idx_j + 1 == rows) {
           addToDroppedBoard();
           pieceFalling = false;

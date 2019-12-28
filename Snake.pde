@@ -17,7 +17,7 @@ class Snake {
 
   Snake(int wi, int wf, int hi, int hf, int cellSize) {
     for (int i = 0; i < 4; i++) {
-      snake[i] = new SnakePiece(wi + cellSize * 5, hi + (-i*cellSize) + 10*cellSize);
+      snake[i] = new SnakePiece(wi + cellSize * 5, hi + (-i*cellSize) + cellSize);
     }
     this.hi = hi;
     this.hf = hf;
@@ -26,10 +26,12 @@ class Snake {
     this.cellSize = cellSize;
   }
 
-  void update() {
+  void update(boolean show) {
     moveSnake();
     edges();
-    show();
+    if (show) {
+      show();
+    }
   }
 
 
@@ -48,9 +50,11 @@ class Snake {
 
   void edges() {
     if (snake[0].x >= wf) {
-      snake[0].x = wi;
+      //snake[0].x = wi;
+      dead = true;
     } else if (snake[0].x < wi) {
-      snake[0].x = wf-cellSize;
+      //snake[0].x = wf-cellSize;
+      dead = true;
     } else if (snake[0].y >= hf) {
       //snake[0].y = hi;
       dead = true;
