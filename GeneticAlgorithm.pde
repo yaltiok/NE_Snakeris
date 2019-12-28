@@ -6,7 +6,7 @@
 class GeneticAlgorithm {
   Game[][] games;
   ArrayList<Game> matingPool = new ArrayList();
-  float mutationRate = 0.01;
+  float mutationRate = 0.05;
 
   GeneticAlgorithm(Game[][] games) {
     this.games = games;

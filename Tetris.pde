@@ -10,6 +10,7 @@ class Tetris {
   int yOrder;
   int cellSize;
   boolean pieceFalling = false;
+  float score = 0;
 
   Tetris(int cols, int rows, int xOrder, int yOrder, int cellSize) {
     this.cols = cols;
@@ -51,6 +52,7 @@ class Tetris {
     for (int i = 0; i < droppedPieces.length; i++) {
       droppedPieces[i][index] = false;
     }
+    score += 20;
     lowerBoard(index);
   }
 
@@ -59,6 +61,10 @@ class Tetris {
     if (show) {
       show();
     }
+  }
+  
+  float getTetrisScore(){
+    return score;
   }
 
   void show() {
