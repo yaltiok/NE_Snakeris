@@ -95,9 +95,11 @@ int countGames() {
 void keyPressed() {
   if (keyCode == UP && !fast) {
     gameSpeed=10;
+    fast = true;
     println("Game Speed : " + gameSpeed);
   } else if (keyCode == DOWN && fast) {
     gameSpeed=1;
+    fast = false;
     println("Game Speed : " + gameSpeed);
   } else if (keyCode == BACKSPACE) {
     if (show) {
